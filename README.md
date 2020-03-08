@@ -33,3 +33,5 @@ python evaluate.py --gt_caption data/id2captions_test.json --pd_caption $PATH_TO
 Download pretrained Bert model from [link]()
 
 Download pretrained LaBERT model from [link]()
+
+Install SPICE from [Link]()
