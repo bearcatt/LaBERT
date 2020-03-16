@@ -14,22 +14,39 @@ pip install git+https://github.com/salaniz/pycocoevalcap
 ## Scripts
 Train
 ```bash
-python -m torch.distributed.launch --nproc_per_node=$NUM_GPUS --master_port=4396 train.py save_dir $PATH_TO_TRAIN_OUTPUT samples_per_gpu $NUM_SAMPLES_PER_GPU
+python -m torch.distributed.launch \
+  --nproc_per_node=$NUM_GPUS \
+  --master_port=4396 train.py \
+  save_dir $PATH_TO_TRAIN_OUTPUT \
+  samples_per_gpu $NUM_SAMPLES_PER_GPU
 ```
 Continue train
 ```bash
-python -m torch.distributed.launch --nproc_per_node=$NUM_GPUS --master_port=4396 train.py save_dir $PATH_TO_TRAIN_OUTPUT samples_per_gpu $NUM_SAMPLES_PER_GPU model_path $PATH_TO_MODEL
+python -m torch.distributed.launch \
+  --nproc_per_node=$NUM_GPUS \
+  --master_port=4396 train.py \
+  save_dir $PATH_TO_TRAIN_OUTPUT \
+  samples_per_gpu $NUM_SAMPLES_PER_GPU \
+  model_path $PATH_TO_MODEL
 ```
 Inference
 ```bash
-python inference.py model_path $PATH_TO_MODEL save_dir $PATH_TO_TEST_OUTPUT samples_per_gpu $NUM_SAMPLES_PER_GPU
+python inference.py \
+  model_path $PATH_TO_MODEL \
+  save_dir $PATH_TO_TEST_OUTPUT \
+  samples_per_gpu $NUM_SAMPLES_PER_GPU
 ```
 Evaluate
 ```bash
-python evaluate.py --gt_caption data/id2captions_test.json --pd_caption $PATH_TO_TESR_OUTPUT/caption_results.json --save_dir $PATH_TO_TESR_OUTPUT
+python evaluate.py \
+  --gt_caption data/id2captions_test.json \
+  --pd_caption $PATH_TO_TESR_OUTPUT/caption_results.json \
+  --save_dir $PATH_TO_TESR_OUTPUT
 ```
 
 ## Notes
+Prepare data follow [link]()
+
 Download pretrained Bert model from [link]()
 
 Download pretrained LaBERT model from [link]()
