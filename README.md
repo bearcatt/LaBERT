@@ -1,4 +1,6 @@
-# Length-Controllable Image Captioning
+# Length-Controllable Image Captioning (ECCV2020)
+
+This repo provides the implemetation of the paper [Length-Controllable Image Captioning](https://arxiv.org/abs/2007.09580).
 
 ## Install
 
@@ -10,6 +12,14 @@ conda install pytorch=1.3.1 torchvision cudatoolkit=10.1 -c pytorch
 conda install h5py tqdm transformers=2.1.1
 pip install git+https://github.com/salaniz/pycocoevalcap
 ```
+
+#### Data & Pre-trained Models
+
+* Prepare MSCOCO data follow [link]().
+* Download pretrained Bert and Faster-RCNN from [Baidu Cloud Disk](https://pan.baidu.com/s/14DRNGGOSMVfO9Vz5CCEdEg) [code: 0j9f]. 
+  * It's an unified checkpoint file, containing a pretrained `Bert-base` and the `fc6` layer of the Faster-RCNN.
+* Download our pretrained LaBERT model from [Baidu Cloud Disk](https://pan.baidu.com/s/12FujGSvDBQQROJOYrtDXsw) [code: fpke].
+
 
 ## Scripts
 Train
@@ -40,15 +50,8 @@ Evaluate
 ```bash
 python evaluate.py \
   --gt_caption data/id2captions_test.json \
-  --pd_caption $PATH_TO_TESR_OUTPUT/caption_results.json \
-  --save_dir $PATH_TO_TESR_OUTPUT
+  --pd_caption $PATH_TO_TEST_OUTPUT/caption_results.json \
+  --save_dir $PATH_TO_TEST_OUTPUT
 ```
 
-## Notes
-Prepare data follow [link]()
-
-Download pretrained Bert model from [link]()
-
-Download pretrained LaBERT model from [link]()
-
-Install SPICE from [Link]()
+## Cite

@@ -11,7 +11,7 @@ from tqdm import tqdm
 from transformers.modeling_bert import BertConfig
 
 from config import _C as config
-from dataset import COCOCaptionDataset, collate_fn_infer
+from dataset import COCOCaptionDataset
 from modeling import Generator
 from utils import mkdir
 from utils.checkpointer import Checkpointer
@@ -145,7 +145,6 @@ if __name__ == "__main__":
     )
     data_loader = make_data_loader(
         dataset=dataset,
-        collate_fn=collate_fn_infer,
         batch_size=config.samples_per_gpu,
         num_workers=config.num_workers,
         split='test'

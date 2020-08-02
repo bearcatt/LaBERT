@@ -150,14 +150,3 @@ def collate_fn_train(batch):
 
     return token_type_id, input_token_id, masked_token_id, \
            region_feature, region_class, region_spatial
-
-
-def collate_fn_infer(batch):
-    batch = list(zip(*batch))
-
-    region_feature = torch.stack(batch[0], dim=0)
-    region_class = torch.stack(batch[1], dim=0)
-    region_spatial = torch.stack(batch[2], dim=0)
-    image_id = torch.stack(batch[3], dim=0)
-
-    return region_feature, region_class, region_spatial, image_id
