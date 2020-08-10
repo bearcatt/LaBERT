@@ -9,7 +9,7 @@ conda create --name labert python=3.7
 conda activate labert
 
 conda install pytorch=1.3.1 torchvision cudatoolkit=10.1 -c pytorch
-conda install h5py tqdm transformers=2.1.1
+pip install h5py tqdm transformers==2.1.1
 pip install git+https://github.com/salaniz/pycocoevalcap
 ```
 
