@@ -118,9 +118,9 @@ def make_batch_data_sampler(
 
 def make_data_loader(
         dataset,
-        collate_fn,
         batch_size,
         num_workers,
+        collate_fn=None,
         max_iter=None,
         split='trainrestval',
         is_distributed=False,
