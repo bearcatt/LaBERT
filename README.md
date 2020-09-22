@@ -15,7 +15,7 @@ pip install git+https://github.com/salaniz/pycocoevalcap
 
 #### Data & Pre-trained Models
 
-* Prepare MSCOCO data follow [link]().
+* Prepare MSCOCO data follow [link](https://github.com/LuoweiZhou/VLP#-data-preparation).
 * Download pretrained Bert and Faster-RCNN from [Baidu Cloud Disk](https://pan.baidu.com/s/14DRNGGOSMVfO9Vz5CCEdEg) [code: 0j9f]. 
   * It's an unified checkpoint file, containing a pretrained `Bert-base` and the `fc6` layer of the Faster-RCNN.
 * Download our pretrained LaBERT model from [Baidu Cloud Disk](https://pan.baidu.com/s/12FujGSvDBQQROJOYrtDXsw) [code: fpke].
@@ -55,3 +55,12 @@ python evaluate.py \
 ```
 
 ## Cite
+Please consider citing our paper in your publications if the project helps your research. 
+```
+@article{deng2020length,
+  title={Length-Controllable Image Captioning},
+  author={Deng, Chaorui and Ding, Ning and Tan, Mingkui and Wu, Qi},
+  journal={arXiv preprint arXiv:2007.09580},
+  year={2020}
+}
+```
