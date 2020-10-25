@@ -16,9 +16,9 @@ pip install git+https://github.com/salaniz/pycocoevalcap
 #### Data & Pre-trained Models
 
 * Prepare MSCOCO data follow [link](https://github.com/LuoweiZhou/VLP#-data-preparation).
-* Download pretrained Bert and Faster-RCNN from [Baidu Cloud Disk](https://pan.baidu.com/s/14DRNGGOSMVfO9Vz5CCEdEg) [code: 0j9f]. 
+* Download pretrained Bert and Faster-RCNN from [Baidu Cloud Disk](https://pan.baidu.com/s/14DRNGGOSMVfO9Vz5CCEdEg) [code: 0j9f] or [Google Drive](https://drive.google.com/file/d/1B3R2wTYeoiXdT4HsKj4EEdWPnKdZjF3L/view?usp=sharing). 
   * It's an unified checkpoint file, containing a pretrained `Bert-base` and the `fc6` layer of the Faster-RCNN.
-* Download our pretrained LaBERT model from [Baidu Cloud Disk](https://pan.baidu.com/s/12FujGSvDBQQROJOYrtDXsw) [code: fpke].
+* Download our pretrained LaBERT model from [Baidu Cloud Disk](https://pan.baidu.com/s/12FujGSvDBQQROJOYrtDXsw) [code: fpke] or [Google Drive](https://drive.google.com/file/d/1X1MP5QPD5YIkWemRj_S87Z0dCF-65VYs/view?usp=sharing).
 
 
 ## Scripts
