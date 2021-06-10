@@ -47,9 +47,9 @@ def train(generator, optimizer, data_loader, scheduler, checkpointer,
         token_type_ids = batch[0].to(device)  # (N, L), long
         input_token_ids = batch[1].to(device)  # (N, L), long
         masked_token_ids = batch[2].to(device)  # (N, L), long
-        region_features = batch[2].to(device)  # (N, 100, 2048), float
-        region_class = batch[3].to(device)  # (N, 100, 1601), float
-        region_spatial = batch[4].to(device)  # (N, 100, 6), float
+        region_features = batch[3].to(device)  # (N, 100, 2048), float
+        region_class = batch[4].to(device)  # (N, 100, 1601), float
+        region_spatial = batch[5].to(device)  # (N, 100, 6), float
 
         num_img_tokens = region_spatial.size(1)
         seq_length = input_token_ids.size(1)
