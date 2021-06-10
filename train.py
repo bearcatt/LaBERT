@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import random
 import time
 
 import torch
@@ -45,10 +46,11 @@ def train(generator, optimizer, data_loader, scheduler, checkpointer,
 
         token_type_ids = batch[0].to(device)  # (N, L), long
         input_token_ids = batch[1].to(device)  # (N, L), long
-        masked_token_ids = batch[2].to(device)  # (N, L), long
-        region_features = batch[3].to(device)  # (N, 100, 2048), float
-        region_class = batch[4].to(device)  # (N, 100, 1601), float
-        region_spatial = batch[5].to(device)  # (N, 100, 6), float
+        # masked_token_ids = batch[2].to(device)  # (N, L), long
+        masked_token_ids = input_token_ids.copy()
+        region_features = batch[2].to(device)  # (N, 100, 2048), float
+        region_class = batch[3].to(device)  # (N, 100, 1601), float
+        region_spatial = batch[4].to(device)  # (N, 100, 6), float
 
         num_img_tokens = region_spatial.size(1)
         seq_length = input_token_ids.size(1)
@@ -74,13 +76,30 @@ def train(generator, optimizer, data_loader, scheduler, checkpointer,
         _attention_mask = attention_mask.new_ones((batch_size, num_img_tokens))
         attention_mask = torch.cat((_attention_mask, attention_mask), dim=1)
 
-        mask_position = (masked_token_ids == MASK).to(torch.long).view(-1)
-        mask_position = mask_position.nonzero().squeeze()
+        attention_probs = generator(
+            region_features, position_features,
+            input_token_ids, token_type_ids,
+            position_ids, attention_mask, True)
+        attention_probs = sum(attention_probs).sum(dim=1)
+
+        for masked_token_id, attention_prob in zip(masked_token_ids, attention_probs):
+            high = (masked_token_id != PAD).sum()
+
+            attention_prob[num_img_tokens + high:, :] = 0
+            attention_prob = attention_prob.sum(dim=0) / (num_img_tokens + high)
+
+            num_masks = random.randint(max(1, int(0.1 * high)), high)
+            if random.random() > 0.5:
+                mask_position = random.sample(range(high), num_masks)
+                mask_position = torch.Tensor(mask_position).long().to(device)
+            else:
+                _, mask_position = attention_prob[num_img_tokens:].topk(num_masks)
+            masked_token_id[mask_position] = MASK
 
         pred_scores = generator(
             region_features, position_features,
             masked_token_ids, token_type_ids,
-            position_ids, attention_mask)
+            position_ids, attention_mask, False)
 
         pred_scores = pred_scores[:, num_img_tokens:, :]
         pred_scores = pred_scores.contiguous().view(-1, num_tokens)
@@ -133,7 +152,10 @@ if __name__ == "__main__":
     arguments = {'iteration': 0}
     device = torch.device(config.device)
 
-    bert_config = BertConfig(type_vocab_size=len(config.boundaries) + 2)
+    bert_config = BertConfig(
+        type_vocab_size=len(config.boundaries) + 2,
+        output_attentions=True,
+    )
     generator = Generator(bert_config)
     generator = generator.to(device)
 

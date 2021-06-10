@@ -53,17 +53,17 @@ class Generator(modeling_bert.BertPreTrainedModel):
         del state_dict
 
     def forward(self, region_features, position_features,
-                masked_token_ids, token_type_ids, position_ids,
-                attention_mask):
+                token_ids, token_type_ids, position_ids,
+                attention_mask, return_attention=False):
         embeddings = self.embedding_layer(
             region_features, position_features,
-            masked_token_ids, token_type_ids, position_ids)
+            token_ids, token_type_ids, position_ids)
 
         attention_mask = attention_mask.unsqueeze(1).unsqueeze(2)
         attention_mask = (1.0 - attention_mask) * -10000.0
 
-        hidden_states = self.encoder(embeddings, attention_mask, self.head_mask)[0]
-        return self.classifier(hidden_states)
+        hidden_states, attentions = self.encoder(embeddings, attention_mask, self.head_mask)
+        return attentions if return_attention else self.classifier(hidden_states)
 
 
 class LabelSmoothingLoss(nn.Module):
