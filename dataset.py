@@ -1,5 +1,6 @@
 import json
 import os.path as osp
+import random
 from collections import namedtuple
 
 import h5py
@@ -110,20 +111,20 @@ class COCOCaptionDataset(Dataset):
 
         input_token_id = input_token_id + [EOS] * offset
 
-        # masked_token_id = input_token_id.copy()
-        # num_masks = random.randint(max(1, int(0.1 * high)), high)
-        # selected_idx = random.sample(range(high), num_masks)
-        # for i in selected_idx:
-        #     masked_token_id[i] = MASK
+        masked_token_id = input_token_id.copy()
+        num_masks = random.randint(max(1, int(0.1 * high)), high)
+        selected_idx = random.sample(range(high), num_masks)
+        for i in selected_idx:
+            masked_token_id[i] = MASK
 
         input_token_id = torch.tensor(input_token_id, dtype=torch.long)
-        # masked_token_id = torch.tensor(masked_token_id, dtype=torch.long)
+        masked_token_id = torch.tensor(masked_token_id, dtype=torch.long)
 
         region_feature, region_class, region_spatial = \
             self.get_region_feature(sample.image_id)
 
-        return token_type_id, input_token_id, region_feature, \
-            region_class, region_spatial
+        return token_type_id, input_token_id, masked_token_id, \
+            region_feature, region_class, region_spatial
 
     def _get_item_infer(self, index):
         sample = self.samples[index]
@@ -141,10 +142,11 @@ def collate_fn_train(batch):
 
     token_type_id = pad_sequence(batch[0], batch_first=True, padding_value=0)
     input_token_id = pad_sequence(batch[1], batch_first=True, padding_value=PAD)
+    masked_token_id = pad_sequence(batch[2], batch_first=True, padding_value=PAD)
 
-    region_feature = torch.stack(batch[2], dim=0)
-    region_class = torch.stack(batch[3], dim=0)
-    region_spatial = torch.stack(batch[4], dim=0)
+    region_feature = torch.stack(batch[3], dim=0)
+    region_class = torch.stack(batch[4], dim=0)
+    region_spatial = torch.stack(batch[5], dim=0)
 
-    return token_type_id, input_token_id, region_feature, \
-        region_class, region_spatial
+    return token_type_id, input_token_id, masked_token_id, \
+        region_feature, region_class, region_spatial

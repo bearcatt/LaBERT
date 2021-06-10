@@ -46,8 +46,7 @@ def train(generator, optimizer, data_loader, scheduler, checkpointer,
 
         token_type_ids = batch[0].to(device)  # (N, L), long
         input_token_ids = batch[1].to(device)  # (N, L), long
-        # masked_token_ids = batch[2].to(device)  # (N, L), long
-        masked_token_ids = input_token_ids.copy()
+        masked_token_ids = batch[2].to(device)  # (N, L), long
         region_features = batch[2].to(device)  # (N, 100, 2048), float
         region_class = batch[3].to(device)  # (N, 100, 1601), float
         region_spatial = batch[4].to(device)  # (N, 100, 6), float
@@ -76,25 +75,26 @@ def train(generator, optimizer, data_loader, scheduler, checkpointer,
         _attention_mask = attention_mask.new_ones((batch_size, num_img_tokens))
         attention_mask = torch.cat((_attention_mask, attention_mask), dim=1)
 
-        attention_probs = generator(
-            region_features, position_features,
-            input_token_ids, token_type_ids,
-            position_ids, attention_mask, True)
-        attention_probs = sum(attention_probs).sum(dim=1)
+        if random.random() > 0.5:
+            masked_token_ids = input_token_ids.clone()
+            attention_probs = generator(
+                region_features, position_features,
+                input_token_ids, token_type_ids,
+                position_ids, attention_mask, True)
+            attention_probs = sum(attention_probs).sum(dim=1)
 
-        for masked_token_id, attention_prob in zip(masked_token_ids, attention_probs):
-            high = (masked_token_id != PAD).sum()
+            for masked_token_id, attention_prob in zip(masked_token_ids, attention_probs):
+                high = (masked_token_id != PAD).sum()
 
-            attention_prob[num_img_tokens + high:, :] = 0
-            attention_prob = attention_prob.sum(dim=0) / (num_img_tokens + high)
+                attention_prob[num_img_tokens + high:, :] = 0
+                attention_prob = attention_prob.sum(dim=0) / (num_img_tokens + high)
 
-            num_masks = random.randint(max(1, int(0.1 * high)), high)
-            if random.random() > 0.5:
-                mask_position = random.sample(range(high), num_masks)
-                mask_position = torch.Tensor(mask_position).long().to(device)
-            else:
+                num_masks = random.randint(max(1, int(0.1 * high)), high)
                 _, mask_position = attention_prob[num_img_tokens:].topk(num_masks)
-            masked_token_id[mask_position] = MASK
+                masked_token_id[mask_position] = MASK
+
+        mask_positions = (masked_token_ids == MASK).to(torch.long).view(-1)
+        mask_positions = mask_positions.nonzero().squeeze()
 
         pred_scores = generator(
             region_features, position_features,
@@ -103,9 +103,9 @@ def train(generator, optimizer, data_loader, scheduler, checkpointer,
 
         pred_scores = pred_scores[:, num_img_tokens:, :]
         pred_scores = pred_scores.contiguous().view(-1, num_tokens)
-        pred_scores = pred_scores[mask_position]
+        pred_scores = pred_scores[mask_positions]
 
-        gt_token_ids = input_token_ids.view(-1)[mask_position]
+        gt_token_ids = input_token_ids.view(-1)[mask_positions]
         loss = criterion(pred_scores, gt_token_ids)
 
         optimizer.zero_grad()
