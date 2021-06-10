@@ -77,11 +77,12 @@ def train(generator, optimizer, data_loader, scheduler, checkpointer,
 
         if random.random() > 0.5:
             masked_token_ids = input_token_ids.clone()
-            attention_probs = generator(
-                region_features, position_features,
-                input_token_ids, token_type_ids,
-                position_ids, attention_mask, True)
-            attention_probs = sum(attention_probs).sum(dim=1)
+            with torch.no_grad():
+                attention_probs = generator(
+                    region_features, position_features,
+                    input_token_ids, token_type_ids,
+                    position_ids, attention_mask, True)
+                attention_probs = sum(attention_probs).sum(dim=1)
 
             for masked_token_id, attention_prob in zip(masked_token_ids, attention_probs):
                 high = (masked_token_id != PAD).sum()
