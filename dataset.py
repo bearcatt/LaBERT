@@ -124,7 +124,7 @@ class COCOCaptionDataset(Dataset):
             self.get_region_feature(sample.image_id)
 
         return token_type_id, input_token_id, masked_token_id, \
-            region_feature, region_class, region_spatial
+                region_feature, region_class, region_spatial
 
     def _get_item_infer(self, index):
         sample = self.samples[index]
@@ -149,4 +149,4 @@ def collate_fn_train(batch):
     region_spatial = torch.stack(batch[5], dim=0)
 
     return token_type_id, input_token_id, masked_token_id, \
-        region_feature, region_class, region_spatial
+            region_feature, region_class, region_spatial
